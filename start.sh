@@ -85,20 +85,6 @@ print_info "目录内容:"
 tree -a 2>/dev/null || find . -type f -o -type d | sort
 echo ""
 
-# 2. apt换源
-print_info "开始配置apt源..."
-if command -v apt &> /dev/null; then
-    # 备份原始源
-    if [ -f /data/data/com.termux/files/usr/etc/apt/sources.list ]; then
-        cp /data/data/com.termux/files/usr/etc/apt/sources.list /data/data/com.termux/files/usr/etc/apt/sources.list.backup
-        print_success "已备份原始源文件"
-    fi
-    
-    # 使用清华源（Termux官方推荐）
-    print_info "配置清华大学镜像源..."
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24 stable main" > /data/data/com.termux/files/usr/etc/apt/sources.list
-    
-    # 更新包列表
     print_info "更新包列表..."
     if ! apt update; then
         print_warning "apt update失败，尝试使用默认源..."
@@ -137,10 +123,10 @@ fi
 # 跳过pip升级（Termux中禁止）
 print_info "跳过pip升级（Termux环境中已预装）"
 
-# 安装Python依赖
+# 安装Python依赖 - 使用临时pip源，不写入配置文件
 if [ -f requirements.txt ]; then
-    print_info "安装Python依赖包..."
-    pip install -r requirements.txt
+    print_info "安装Python依赖包（使用临时清华源）..."
+    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn -r requirements.txt
     print_success "Python依赖安装完成"
 else
     print_error "未找到requirements.txt文件"
