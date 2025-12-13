@@ -59,8 +59,6 @@ declare -a FILES_TO_DOWNLOAD=(
     "requirements.txt:requirements.txt"
     "templates/index.html:templates/index.html"
     "README.md:README.md"
-    ".gitignore:.gitignore"
-    "uploads/.gitkeep:uploads/.gitkeep"
 )
 
 # 下载所有文件
@@ -138,10 +136,6 @@ fi
 
 # 跳过pip升级（Termux中禁止）
 print_info "跳过pip升级（Termux环境中已预装）"
-
-# 安装系统级依赖
-print_info "安装系统级依赖..."
-apt install -y clang make pkg-config libffi-dev openssl-dev libjpeg-turbo-dev
 
 # 安装Python依赖
 if [ -f requirements.txt ]; then
