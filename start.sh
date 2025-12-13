@@ -102,7 +102,12 @@ if command -v apt &> /dev/null; then
     
     # 更新包列表
     print_info "更新包列表..."
-    apt update && apt upgrade -y
+    if ! apt update; then
+        print_warning "apt update失败，尝试使用默认源..."
+        echo "deb https://packages.termux.org/apt/termux-packages/ stable main" > /data/data/com.termux/files/usr/etc/apt/sources.list
+        apt update || print_error "apt update失败，继续安装..."
+    fi
+    apt upgrade -y || print_warning "apt upgrade部分失败，继续安装..."
     print_success "apt源配置完成"
 else
     print_warning "未找到apt命令，跳过换源步骤"
@@ -131,9 +136,8 @@ else
     print_success "pip已安装: $(pip --version)"
 fi
 
-# 升级pip
-print_info "升级pip..."
-pip install --upgrade pip
+# 跳过pip升级（Termux中禁止）
+print_info "跳过pip升级（Termux环境中已预装）"
 
 # 安装系统级依赖
 print_info "安装系统级依赖..."
