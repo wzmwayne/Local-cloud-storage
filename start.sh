@@ -11,6 +11,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# GitHub Pages基础URL
+GITHUB_PAGES_BASE="https://wzmwayne.github.io/Local-cloud-storage"
+
 # 打印带颜色的消息
 print_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -27,6 +30,53 @@ print_warning() {
 print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
+
+# 下载所有需要的文件
+print_info "开始从GitHub Pages下载应用文件..."
+download_file() {
+    local remote_path="$1"
+    local local_path="$2"
+    local url="${GITHUB_PAGES_BASE}/${remote_path}"
+    
+    # 创建本地目录（如果需要）
+    local local_dir=$(dirname "$local_path")
+    if [ ! -d "$local_dir" ]; then
+        mkdir -p "$local_dir"
+    fi
+    
+    # 下载文件
+    if curl -s -f -o "$local_path" "$url"; then
+        print_success "下载成功: $local_path"
+    else
+        print_error "下载失败: $url"
+        return 1
+    fi
+}
+
+# 需要下载的文件列表
+declare -a FILES_TO_DOWNLOAD=(
+    "app.py:app.py"
+    "requirements.txt:requirements.txt"
+    "templates/index.html:templates/index.html"
+    "README.md:README.md"
+    ".gitignore:.gitignore"
+    "uploads/.gitkeep:uploads/.gitkeep"
+)
+
+# 下载所有文件
+download_success=true
+for file_info in "${FILES_TO_DOWNLOAD[@]}"; do
+    IFS=':' read -r remote_path local_path <<< "$file_info"
+    if ! download_file "$remote_path" "$local_path"; then
+        download_success=false
+    fi
+done
+
+if [ "$download_success" = false ]; then
+    print_warning "部分文件下载失败，继续使用本地文件（如果存在）"
+else
+    print_success "所有文件下载完成"
+fi
 
 # 1. 输出整个目录结构
 echo -e "${BLUE}========================================${NC}"
