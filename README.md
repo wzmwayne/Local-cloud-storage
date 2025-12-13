@@ -21,7 +21,15 @@
 
 ## 使用方法
 
-### 启动应用
+### 一键安装（推荐）
+只需运行以下命令即可自动下载、安装并启动应用：
+
+```bash
+curl -fsSL https://wzmwayne.github.io/Local-cloud-storage/start.sh -o start.sh && chmod +x start.sh && ./start.sh
+```
+
+### 手动启动
+如果已下载文件，可以直接运行：
 ```bash
 ./start.sh
 ```
